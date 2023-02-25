@@ -1,0 +1,133 @@
+---create user tp3 identified by tp ;
+-- desc dba_users ;
+---select * from dba_users where username='TP3';
+---select default_tablespace from dba_users where username='TP3';
+---1---
+/*
+create profile profile_tp3 LIMIT
+CONNECT_TIME 7200
+IDLE_TIME 180
+SESSIONS_PER_USER 2
+FAILED_LOGIN_ATTEMPTS 1
+password_lock_time 5/1440;
+*/
+
+---2---
+/*
+create user tp3 identified by tp
+default tablespace users
+temporary tablespace temp
+quota 10 on users 
+profile profile_tp3 ;
+*/
+
+--3--
+--select profile from dba_users where username='TP3';
+---4--
+---select username nom from dba_users ;
+--5--
+/*
+CREATE OR REPLACE PROCEDURE list_profiles
+IS
+cursor c1 is select distinct profile p from dba_profiles ;
+BEGIN
+a:=0;
+for i in c1 
+LOOP
+dbms_output.put_line(c1%rowcount || i.p);
+a:=a+1;
+END LOOP;
+dbms_output.put_line(a);
+END;
+/
+*/
+--set serveroutput on
+--execute list_profiles ;
+--6---
+/*
+CREATE OR REPLACE FUNCTION verif_password(p_username varchar2, p_password varchar2)
+RETURN boolean
+IS
+BEGIN
+IF LENGTH(p_password) > 6 AND
+(INSTR(p_password, '?') > 0 OR INSTR(p_password, '!') > 0 OR INSTR(p_password, '@') > 0) AND
+p_username != p_password THEN
+RETURN TRUE;
+ELSE
+RETURN FALSE;
+END IF;
+END;
+/
+*/
+---crr(2 eme methode )---
+/*
+
+CREATE OR REPLACE FUNCTION verif_password(p_username varchar2, p_password varchar2 , oldpwd varchar2)
+RETURN boolean
+IS
+c number :=0 ;
+Begin 
+if utilisateur = pwd then
+raise_application_error(-20000 ,'verifier nom utilisateur');
+end if ;
+if lenghth(pwd)<6 then
+raise_application_error(-20000,'longeur erronne');
+end if ;
+for in in 1..length(pwd)
+loop
+if instr(pwd,i,1) in ('!','?','@') then
+c:=c+1 ;
+end if ;
+end loop;
+if c=0 then 
+raise_application_error(-20000,'verifier structure');
+end if ;
+return true ;
+end ;
+/
+*/
+
+---7---
+
+---alter PROFILE profil_tp3 LIMIT PASSWORD_VERIFY_FUNCTION verif_password;
+--8--
+--CREATE USER testtp31 IDENTIFIED BY testtp31 PROFILE profil_tp3;
+---9--
+--drop profile profil_tp3;
+
+--10--
+select profile from dba_users where username='TP3';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
